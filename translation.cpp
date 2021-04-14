@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
   t.start();
 
   Nef_polyhedron result;
-  for(int i=0; i<200; ++i)
+  for(int i=0; i<100; ++i)
   {
     Polyhedron p;
     make_cube_3(p);
