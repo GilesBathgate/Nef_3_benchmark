@@ -1,0 +1,38 @@
+name: Nef_3_benchmark
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev
+    - name: Checkout CGAL
+      uses: actions/checkout@v2
+      with:
+        repository: CGAL/cgal
+        path: cgal
+    - name: Install CGAL
+      run: |
+        pushd cgal;
+        mkdir build;
+        pushd build;
+        cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
+        sudo make install;
+        popd;
+        popd;
+        rm -r cgal;
+    - name: Configure
+      run: cmake -DCMAKE_BUILD_TYPE=Release .
+    - name: Build
+      run: make
+    - name: Test
+      run: |
+        ./intersection;
+        ./translation;
+
