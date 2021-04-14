@@ -15,6 +15,8 @@ typedef CGAL::Nef_polyhedron_3<K> Nef_polyhedron;
 
 int main(int argc, char* argv[])
 {
+  std::cout << argv[0] << std::endl;
+
   Surface_mesh A, B;
 
   {

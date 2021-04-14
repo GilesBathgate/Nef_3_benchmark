@@ -40,6 +40,7 @@ typename Poly::Halfedge_handle make_cube_3( Poly& P) {
 
 int main(int argc, char* argv[])
 {
+  std::cout << argv[0] << std::endl;
 
   CGAL::Timer t;
   t.start();
