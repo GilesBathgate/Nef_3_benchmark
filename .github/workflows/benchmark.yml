@@ -33,6 +33,6 @@ jobs:
       run: make
     - name: Test
       run: |
-        ./intersection;
-        ./translation;
+        timeout 1m ./intersection;
+        timeout 1m ./translation;
 
