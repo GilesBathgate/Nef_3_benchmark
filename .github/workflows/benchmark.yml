@@ -2,7 +2,7 @@ name: Nef_3_benchmark
 
 on:
   push:
-    branches: [ main ]
+    branches: [ google-benchmark ]
 
 jobs:
   linux:
@@ -11,7 +11,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install Dependencies
-      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev
+      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libbenchmark-dev
     - name: Checkout CGAL
       uses: actions/checkout@v2
       with:
@@ -33,6 +33,5 @@ jobs:
       run: make
     - name: Test
       run: |
-        timeout 1m ./intersection;
-        timeout 1m ./translation;
+        timeout 10m ./intersection_benchmark;
 

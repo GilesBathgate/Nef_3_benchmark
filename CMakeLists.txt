@@ -5,20 +5,9 @@ cmake_minimum_required(VERSION 3.1...3.15)
 project(Nef_3_benchmark)
 
 find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
+find_package(benchmark REQUIRED)
 
-if(CGAL_Qt5_FOUND)
-  add_definitions(-DCGAL_USE_BASIC_VIEWER -DQT_NO_KEYWORDS)
-endif()
 
-# create a target per cppfile
-file(
-  GLOB cppfiles
-  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-foreach(cppfile ${cppfiles})
-  create_single_source_cgal_program("${cppfile}")
-endforeach()
+create_single_source_cgal_program(intersection_benchmark.cpp)
+target_link_libraries(intersection_benchmark PUBLIC benchmark::benchmark)
 
-if(CGAL_Qt5_FOUND)
-#  target_link_libraries(draw_nef_3 PUBLIC CGAL::CGAL_Qt5)
-endif()
