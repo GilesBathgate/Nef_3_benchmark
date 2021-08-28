@@ -55,7 +55,7 @@ jobs:
         make clean;
     - name: Test
       run: |
-        timeout 30m /usr/share/benchmark/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=10 | tee ./benchmark_results.txt;
+        timeout 30m /usr/share/benchmark/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=5 | tee ./benchmark_results.txt;
         sed 's/\x1b\[[0-9;]*m//g' -i ./benchmark_results.txt;
     - name: Store results
       uses: actions/upload-artifact@v2
