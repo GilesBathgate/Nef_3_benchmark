@@ -33,7 +33,7 @@ jobs:
     - name: Build baseline
       run: |
         make;
-        mv ./intersection_benchmark ./baseline;
+        mv ./benchmarks ./baseline;
         make clean;
     - name: Install CGAL contender
       run: |
@@ -51,7 +51,7 @@ jobs:
     - name: Build contender
       run: |
         make;
-        mv ./intersection_benchmark ./contender;
+        mv ./benchmarks ./contender;
         make clean;
     - name: Test
       run: |
