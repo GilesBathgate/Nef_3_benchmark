@@ -11,7 +11,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install Dependencies
-      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libbenchmark-dev
+      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libbenchmark-dev libbenchmark-tools
+    - name: Install Python Dependencies
+      run: sudo python -m pip install scipy
     - name: Checkout CGAL
       uses: actions/checkout@v2
       with:
@@ -53,6 +55,5 @@ jobs:
         make clean;
     - name: Test
       run: |
-        timeout 10m ./baseline;
-        timeout 10m ./contender;
+        timeout 30m /usr/share/benchmark/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=10;
 
