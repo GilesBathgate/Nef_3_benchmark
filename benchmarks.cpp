@@ -49,6 +49,26 @@ static void BM_intersection(benchmark::State& state) {
   }
 }
 
+static void BM_union(benchmark::State& state) {
+  for (auto _ : state) {
+    Surface_mesh A, B;
+    {
+      std::ifstream in("data/spheregrid.off");
+      in >> A;
+    }
+
+    {
+      std::ifstream in("data/shiftedspheregrid.off");
+      in >> B;
+    }
+
+    Nef_polyhedron nefA(A), nefB(B);
+
+    Nef_polyhedron nefC = nefA.join(nefB);
+  }
+}
+
 BENCHMARK(BM_difference)->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_intersection)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_union)->Unit(benchmark::kMillisecond);
 BENCHMARK_MAIN();
