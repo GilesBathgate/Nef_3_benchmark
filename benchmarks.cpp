@@ -1,6 +1,3 @@
-
-#define CGAL_DEBUG //force assertions
-
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/Nef_polyhedron_3.h>
