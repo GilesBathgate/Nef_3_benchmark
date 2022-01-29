@@ -40,7 +40,7 @@ jobs:
         pushd cgal;
         git remote add giles https://github.com/GilesBathgate/cgal.git;
         git fetch giles;
-        git checkout Nef_3-constructor_single_initialise-GilesBathgate;
+        git checkout Nef_3-performance_chained_map-GilesBathgate;
         pushd build;
         cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
