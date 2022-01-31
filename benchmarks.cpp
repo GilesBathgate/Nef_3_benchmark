@@ -12,6 +12,7 @@ typedef CGAL::Surface_mesh<K::Point_3> Surface_mesh;
 typedef CGAL::Nef_polyhedron_3<K> Nef_polyhedron;
 typedef CGAL::Aff_transformation_3<K> Aff_transformation_3;
 typedef CGAL::Vector_3<K> Vector_3;
+typedef CGAL::Point_3<K> Point_3;
 
 static void BM_difference(benchmark::State& state) {
   for (auto _ : state) {
@@ -70,6 +71,13 @@ static void BM_union(benchmark::State& state) {
   }
 }
 
+static void BM_construct(benchmark::State& state) {
+  for (auto _ : state) {
+      Nef_polyhedron nefA(Point_3(20.1,12.0,18.333));
+      benchmark::DoNotOptimize(nefA);
+  }
+}
+
 static void BM_union_translate(benchmark::State& state) {
   for (auto _ : state) {
     Surface_mesh A, B;
@@ -103,4 +111,5 @@ BENCHMARK(BM_difference)->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_intersection)->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_union)->Unit(benchmark::kMillisecond);
 BENCHMARK(BM_union_translate)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_construct)->Unit(benchmark::kMillisecond);
 BENCHMARK_MAIN();
