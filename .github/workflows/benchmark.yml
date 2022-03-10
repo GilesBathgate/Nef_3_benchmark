@@ -40,7 +40,7 @@ jobs:
         pushd cgal;
         git remote add giles https://github.com/GilesBathgate/cgal.git;
         git fetch giles;
-        git checkout Nef_3-performance_hashmap_table_size-GilesBathgate;
+        git checkout Hash_map-performance_chained_map_reserve-GilesBathgate;
         pushd build;
         cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
