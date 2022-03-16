@@ -39,8 +39,10 @@ jobs:
       run: |
         pushd cgal;
         git remote add giles https://github.com/GilesBathgate/cgal.git;
+        git remote add afabri https://github.com/afabri/cgal.git;
         git fetch giles;
-        git checkout Nef_3-performance_sphere_circle_test-GilesBathgate;
+        git fetch afabri;
+        git checkout Nef_3-avoid_needless_tests-GF;
         pushd build;
         cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
