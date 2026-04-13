@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install Dependencies
       run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libbenchmark-dev libbenchmark-tools
     - name: Install Python Dependencies
       run: sudo python -m pip install scipy
     - name: Checkout CGAL
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: CGAL/cgal
         path: cgal
@@ -24,7 +24,7 @@ jobs:
         pushd cgal;
         mkdir build;
         pushd build;
-        cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
+        cmake -DWITH_CGAL_Qt6=ON -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
         popd;
         popd;
@@ -39,12 +39,10 @@ jobs:
       run: |
         pushd cgal;
         git remote add giles https://github.com/GilesBathgate/cgal.git;
-        git remote add afabri https://github.com/afabri/cgal.git;
         git fetch giles;
-        git fetch afabri;
-        git checkout Nef_3-avoid_needless_tests-GF;
+        git checkout Nef_3-performance_linear_map-GilesBathgate;
         pushd build;
-        cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
+        cmake -DWITH_CGAL_Qt6=ON -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
         popd;
         popd;
@@ -60,7 +58,7 @@ jobs:
         /usr/share/benchmark/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=10 | tee ./benchmark_results.txt;
         sed 's/\x1b\[[0-9;]*m//g' -i ./benchmark_results.txt;
     - name: Store results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: benchmark_results
         path: ./benchmark_results.txt
