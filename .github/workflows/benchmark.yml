@@ -40,7 +40,7 @@ jobs:
         pushd cgal;
         git remote add giles https://github.com/GilesBathgate/cgal.git;
         git fetch giles;
-        git checkout Hash_map-performance_flat_map-GilesBathgate;
+        git checkout Hash_map-performance_unordered_flat_map-GilesBathgate;
         pushd build;
         cmake -DWITH_CGAL_Qt6=ON -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release ..;
         sudo make install;
