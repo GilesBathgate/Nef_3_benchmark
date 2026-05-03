@@ -72,6 +72,9 @@ public:
   Side_of_plane(std::size_t num_vertices) :
     side_map(Entry(), num_vertices), generation(1) {}
   void next(const Point_3& p, int c) { pop = p; coord = c; ++generation; }
+  void set_side(Vertex_handle v, Oriented_side side) {
+    side_map[v] = {side, generation};
+  }
   Oriented_side operator()(Vertex_handle v){
     auto& entry = side_map[v];
     if(entry.generation != generation) {
@@ -148,7 +151,7 @@ public:
   typedef typename Traits::Plane_3 Plane_3;
   typedef typename Traits::Vector_3 Vector_3;
   typedef typename Traits::Bounding_box_3 Bounding_box_3;
-  typedef typename ::Contender::Side_of_plane<typename Traits::SNC_decorator> Side_of_plane;
+  typedef typename Improved::Side_of_plane<typename Traits::SNC_decorator> Side_of_plane;
   typedef typename Traits::Kernel Kernel;
 
 private:
@@ -237,12 +240,10 @@ Node_handle build_kdtree(Leaf&& L, int depth) {
   }
 
   int coord = depth%3;
-  Point_3 point_on_plane = find_median_point(L.vertex_list, coord);
-
-  side_of_plane.next(point_on_plane, coord);
 
   Leaf L1, L2;
-  classify_objects(L.vertex_list, side_of_plane, L1.vertex_list, L2.vertex_list);
+  Point_3 point_on_plane;
+  classify_vertices(point_on_plane, L.vertex_list, coord, side_of_plane, L1.vertex_list, L2.vertex_list);
 
   bool edges_not_split = classify_objects(L.edge_list, side_of_plane, L1.edge_list, L2.edge_list);
   if(edges_not_split) {
@@ -316,33 +317,62 @@ struct Smaller {
 };
 
 template <typename Smaller>
-static Point_3 find_median_point(Vertex_iterator begin, Vertex_iterator end,
-                                 typename Vertex_list::size_type size) {
-
+static Point_3 find_median_point(Vertex_list& V, Vertex_iterator& lower, Vertex_iterator& upper) {
     Smaller smaller;
 
-    auto upper = std::next(begin, size / 2);
+    auto begin = V.begin();
+    auto end = V.end();
+    upper = std::next(begin, V.size() / 2);
     std::nth_element(begin, upper, end, smaller);
-    auto lower = std::max_element(begin, upper, smaller);
+    lower = std::max_element(begin, upper, smaller);
+
+    if (lower == upper) {
+      return (*lower)->point();
+    }
+
+    if (!smaller(*lower, *upper)) {
+      lower = upper;
+      return (*lower)->point();
+    }
 
     return CGAL::midpoint((*lower)->point(), (*upper)->point());
 }
 
-static Point_3 find_median_point(Vertex_list& V, int coord) {
+static Point_3 find_median_point(Vertex_list& V, int coord,
+                                 Vertex_iterator& lower, Vertex_iterator& upper) {
     CGAL_assertion(V.size() > 1);
-
-    typedef Smaller<typename Kernel::Compare_x_3> Smaller_x_3;
-    typedef Smaller<typename Kernel::Compare_y_3> Smaller_y_3;
-    typedef Smaller<typename Kernel::Compare_z_3> Smaller_z_3;
-
     switch(coord) {
-        case 0: return find_median_point<Smaller_x_3>(V.begin(), V.end(), V.size());
-        case 1: return find_median_point<Smaller_y_3>(V.begin(), V.end(), V.size());
-        case 2: return find_median_point<Smaller_z_3>(V.begin(), V.end(), V.size());
+        case 0: return find_median_point<Smaller<typename Kernel::Compare_x_3>>(V, lower, upper);
+        case 1: return find_median_point<Smaller<typename Kernel::Compare_y_3>>(V, lower, upper);
+        case 2: return find_median_point<Smaller<typename Kernel::Compare_z_3>>(V, lower, upper);
     }
 
     CGAL_error_msg( "never reached");
     return Point_3();
+}
+
+static bool classify_vertices(Point_3& point_on_plane, Vertex_list& V, int coord, Side_of_plane& sop,
+                                 Vertex_list& L1, Vertex_list& L2) {
+    Vertex_iterator lower, upper;
+    point_on_plane = find_median_point(V, coord, lower, upper);
+
+    sop.next(point_on_plane, coord);
+
+    if (lower != upper) {
+        L1.reserve(V.size());
+        L2.reserve(V.size());
+        for (auto it = V.begin(); it != upper; ++it) {
+            L1.push_back(*it);
+            sop.set_side(*it, CGAL::ON_NEGATIVE_SIDE);
+        }
+        for (auto it = upper; it != V.end(); ++it) {
+            L2.push_back(*it);
+            sop.set_side(*it, CGAL::ON_POSITIVE_SIDE);
+        }
+        return false; // Not all on boundary
+    }
+
+    return classify_objects(V, sop, L1, L2);
 }
 
 static Plane_3 construct_splitting_plane(const Point_3& pt, int coord, const CGAL::Homogeneous_tag&)
@@ -371,6 +401,6 @@ static Plane_3 construct_splitting_plane(const Point_3& pt, int coord, const CGA
 
 };
 
-} // namespace Contender
+} // namespace Improved
 
 #endif
