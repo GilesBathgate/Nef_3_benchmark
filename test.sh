@@ -1,9 +1,14 @@
 #!/bin/bash
 
-BENCHMARKS=("Intersect_EE" "Intersect_EF" "Intersect_SE" "Intersect_SF" "Intersect_RE" "Intersect_RF")
+# Ensure build is up to date
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --target constructor_benchmark
 
-for b in "${BENCHMARKS[@]}"
+# Run constructor benchmarks and output to results file
+echo "Running Constructor Benchmarks..." > benchmark_results.txt
+for i in {0..5}
 do
-    echo "Comparing $b..."
-    /usr/bin/python3 ../benchmark/tools/compare.py filters build/intersection_benchmark "BM_${b}_Baseline" "BM_${b}_Contender" --benchmark_repetitions=9 2> /dev/null | grep OVERALL_GEOMEAN
+    echo "Comparing CreateEdgeFacetOverlay Case $i..." >> benchmark_results.txt
+    /usr/bin/python3 ../benchmark/tools/compare.py filters build/constructor_benchmark "BM_CreateEdgeFacetOverlay_Baseline/$i" "BM_CreateEdgeFacetOverlay_Contender/$i" --benchmark_repetitions=9 2> /dev/null | tee -a benchmark_results.txt
 done
+
