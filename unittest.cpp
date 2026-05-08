@@ -4,6 +4,9 @@
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Nef_polyhedron_3.h>
+
+#include "Gaussian_map_to_nef_3.h"
+#include <CGAL/minkowski_sum_3.h>
 #include <vector>
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel K;
@@ -16,6 +19,8 @@ int main(int argc, char* argv[])
   Nef_polyhedron nefA(points.begin(), points.end());
 
   Nef_polyhedron nefB;
+
+  CGAL::minkowski_sum_3(nefA, nefB);
 
   auto result = nefA.intersection(nefB);
 
