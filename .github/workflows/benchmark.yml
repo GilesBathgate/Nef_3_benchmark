@@ -11,9 +11,21 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Install Dependencies
-      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libbenchmark-dev libbenchmark-tools
+      run: sudo apt-get install -y libboost-dev libboost-thread-dev libgmp-dev libmpfr-dev libpfm4-dev
     - name: Install Python Dependencies
       run: sudo python -m pip install scipy
+    - name: Checkout benchmark
+      uses: actions/checkout@v3
+      with:
+        repository: google/benchmark
+        path: benchmark
+    - name: Build benchmark
+      run: |
+        pushd benchmark;
+        cmake -DBENCHMARK_ENABLE_LIBPFM=ON -DBENCHMARK_INSTALL_TOOLS=ON -DBENCHMARK_ENABLE_GTEST_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -B build;
+        cmake --build build;
+        sudo cmake --install build;
+        popd;
     - name: Checkout CGAL
       uses: actions/checkout@v3
       with:
@@ -55,7 +67,7 @@ jobs:
         make clean;
     - name: Test
       run: |
-        /usr/share/benchmark/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=10 | tee ./benchmark_results.txt;
+        python /usr/share/googlebenchmark/tools/compare.py benchmarks ./baseline ./contender --benchmark_repetitions=10 | tee ./benchmark_results.txt;
         sed 's/\x1b\[[0-9;]*m//g' -i ./benchmark_results.txt;
     - name: Store results
       uses: actions/upload-artifact@v4
